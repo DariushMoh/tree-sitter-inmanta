@@ -1105,6 +1105,14 @@
       "required": true,
       "types": [
         {
+          "type": "call_close",
+          "named": true
+        },
+        {
+          "type": "call_open",
+          "named": true
+        },
+        {
           "type": "class_ref",
           "named": true
         },

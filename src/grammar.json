@@ -1696,16 +1696,16 @@
           "name": "class_ref"
         },
         {
-          "type": "STRING",
-          "value": "("
+          "type": "SYMBOL",
+          "name": "call_open"
         },
         {
           "type": "SYMBOL",
           "name": "id_list"
         },
         {
-          "type": "STRING",
-          "value": ")"
+          "type": "SYMBOL",
+          "name": "call_close"
         }
       ]
     },

@@ -307,7 +307,8 @@ module.exports = grammar({
         seq($.typedef_kw, $.cid, $.as_kw, $.constructor),
       ),
 
-    index_stmt: ($) => seq($.index_kw, $.class_ref, "(", $.id_list, ")"),
+    index_stmt: ($) =>
+      seq($.index_kw, $.class_ref, $.call_open, $.id_list, $.call_close),
 
     expression: ($) =>
       prec.left(
