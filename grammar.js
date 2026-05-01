@@ -35,6 +35,8 @@ module.exports = grammar({
     [$.pair_list, $.pair_list_empty],
     [$.relation_def, $.index_lookup],
     [$.relation_def, $.constructor],
+    [$.relation_def, $.implement_def],
+    [$.relation, $.implement_def],
   ],
 
   rules: {

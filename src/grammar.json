@@ -3538,6 +3538,14 @@
     [
       "relation_def",
       "constructor"
+    ],
+    [
+      "relation_def",
+      "implement_def"
+    ],
+    [
+      "relation",
+      "implement_def"
     ]
   ],
   "precedences": [],
