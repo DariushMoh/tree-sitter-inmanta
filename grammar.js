@@ -32,6 +32,7 @@ module.exports = grammar({
     [$.pair_list, $.pair_list_empty],
     [$.relation_def, $.index_lookup],
     [$.relation_def, $.constructor],
+    [$.ns_ref, $.cid],
   ],
 
   rules: {
@@ -238,37 +239,40 @@ module.exports = grammar({
     relation: ($) => choice(seq($.relation_def, $.mls), $.relation_def),
 
     relation_def: ($) =>
-      choice(
-        seq(
-          $.class_ref,
-          ".",
-          $.id,
-          $.multi,
-          $.rel,
-          $.class_ref,
-          ".",
-          $.id,
-          $.multi,
-        ),
-        seq($.class_ref, ".", $.id, $.multi, $.rel, $.class_ref),
-        seq(
-          $.class_ref,
-          ".",
-          $.id,
-          $.multi,
-          optional($.operand_list),
-          $.class_ref,
-          ".",
-          $.id,
-          $.multi,
-        ),
-        seq(
-          $.class_ref,
-          ".",
-          $.id,
-          $.multi,
-          optional($.operand_list),
-          $.class_ref,
+      prec.left(
+        1,
+        choice(
+          seq(
+            $.class_ref,
+            ".",
+            $.id,
+            $.multi,
+            $.rel,
+            $.class_ref,
+            ".",
+            $.id,
+            $.multi,
+          ),
+          seq($.class_ref, ".", $.id, $.multi, $.rel, $.class_ref),
+          seq(
+            $.class_ref,
+            ".",
+            $.id,
+            $.multi,
+            optional($.operand_list),
+            $.class_ref,
+            ".",
+            $.id,
+            $.multi,
+          ),
+          seq(
+            $.class_ref,
+            ".",
+            $.id,
+            $.multi,
+            optional($.operand_list),
+            $.class_ref,
+          ),
         ),
       ),
 
@@ -500,7 +504,11 @@ module.exports = grammar({
 
     class_ref: ($) =>
       prec.left(
-        choice($.cid, seq($.ns_ref, $.sep, $.cid), seq($.var_ref, ".", $.cid)),
+        choice(
+          $.cid,
+          seq($.id, repeat(seq($.sep, $.id)), $.sep, $.cid),
+          seq($.var_ref, ".", $.cid),
+        ),
       ),
 
     class_ref_list: ($) =>
@@ -511,7 +519,7 @@ module.exports = grammar({
         ),
       ),
 
-    ns_ref: ($) => prec.left(seq($.id, repeat(seq($.sep, $.id)))),
+    ns_ref: ($) => prec.left(2, seq($.id, repeat(seq($.sep, $.id)))),
 
     id_list: ($) => seq(repeat(seq($.id, ",")), $.id),
   },
