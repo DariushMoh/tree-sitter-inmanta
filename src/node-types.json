@@ -35,6 +35,16 @@
     }
   },
   {
+    "type": "arity_close",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "arity_open",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "assign",
     "named": true,
     "fields": {},
@@ -282,6 +292,16 @@
     }
   },
   {
+    "type": "call_close",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "call_open",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "class_ref",
     "named": true,
     "fields": {},
@@ -294,7 +314,7 @@
           "named": true
         },
         {
-          "type": "id",
+          "type": "ns_ref",
           "named": true
         },
         {
@@ -436,6 +456,14 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "call_close",
+          "named": true
+        },
+        {
+          "type": "call_open",
+          "named": true
+        },
         {
           "type": "class_ref",
           "named": true
@@ -648,6 +676,14 @@
       "types": [
         {
           "type": "attr_ref",
+          "named": true
+        },
+        {
+          "type": "call_close",
+          "named": true
+        },
+        {
+          "type": "call_open",
           "named": true
         },
         {
@@ -957,10 +993,6 @@
           "named": true
         },
         {
-          "type": "cid",
-          "named": true
-        },
-        {
           "type": "id",
           "named": true
         },
@@ -970,10 +1002,6 @@
         },
         {
           "type": "ns_ref",
-          "named": true
-        },
-        {
-          "type": "sep",
           "named": true
         }
       ]
@@ -993,6 +1021,14 @@
         },
         {
           "type": "class_ref",
+          "named": true
+        },
+        {
+          "type": "lookup_close",
+          "named": true
+        },
+        {
+          "type": "lookup_open",
           "named": true
         },
         {
@@ -1133,6 +1169,16 @@
     }
   },
   {
+    "type": "lookup_close",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "lookup_open",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "main",
     "named": true,
     "root": true,
@@ -1157,9 +1203,17 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
-      "required": false,
+      "multiple": true,
+      "required": true,
       "types": [
+        {
+          "type": "dict_close",
+          "named": true
+        },
+        {
+          "type": "dict_open",
+          "named": true
+        },
         {
           "type": "pair_list",
           "named": true
@@ -1177,6 +1231,14 @@
       "types": [
         {
           "type": "attr_ref",
+          "named": true
+        },
+        {
+          "type": "lookup_close",
+          "named": true
+        },
+        {
+          "type": "lookup_open",
           "named": true
         },
         {
@@ -1198,6 +1260,14 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "arity_close",
+          "named": true
+        },
+        {
+          "type": "arity_open",
+          "named": true
+        },
         {
           "type": "integer",
           "named": true
@@ -1711,6 +1781,14 @@
     "named": false
   },
   {
+    "type": "dict_close",
+    "named": true
+  },
+  {
+    "type": "dict_open",
+    "named": true
+  },
+  {
     "type": "division_op",
     "named": true
   },
@@ -1885,13 +1963,5 @@
   {
     "type": "when_kw",
     "named": true
-  },
-  {
-    "type": "{",
-    "named": false
-  },
-  {
-    "type": "}",
-    "named": false
   }
 ]

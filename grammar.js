@@ -32,7 +32,7 @@ module.exports = grammar({
     [$.pair_list, $.pair_list_empty],
     [$.relation_def, $.index_lookup],
     [$.relation_def, $.constructor],
-    [$.ns_ref, $.cid],
+    [$.lookup_open, $.index_lookup],
   ],
 
   rules: {
@@ -110,16 +110,6 @@ module.exports = grammar({
       choice(
         seq($.import_kw, $.ns_ref),
         seq($.import_kw, $.ns_ref, $.as_kw, $.id),
-        seq($.import_kw, $.id, repeat(seq($.sep, $.id)), $.sep, $.cid),
-        seq(
-          $.import_kw,
-          $.id,
-          repeat(seq($.sep, $.id)),
-          $.sep,
-          $.cid,
-          $.as_kw,
-          $.id,
-        ),
       ),
 
     statement: ($) => choice($.assign, $.for_stmt, $.if_stmt, $.expression),
@@ -249,50 +239,50 @@ module.exports = grammar({
     relation: ($) => choice(seq($.relation_def, $.mls), $.relation_def),
 
     relation_def: ($) =>
-      prec.left(
-        1,
-        choice(
-          seq(
-            $.class_ref,
-            ".",
-            $.id,
-            $.multi,
-            $.rel,
-            $.class_ref,
-            ".",
-            $.id,
-            $.multi,
-          ),
-          seq($.class_ref, ".", $.id, $.multi, $.rel, $.class_ref),
-          seq(
-            $.class_ref,
-            ".",
-            $.id,
-            $.multi,
-            optional($.operand_list),
-            $.class_ref,
-            ".",
-            $.id,
-            $.multi,
-          ),
-          seq(
-            $.class_ref,
-            ".",
-            $.id,
-            $.multi,
-            optional($.operand_list),
-            $.class_ref,
-          ),
+      choice(
+        seq(
+          $.class_ref,
+          ".",
+          $.id,
+          $.multi,
+          $.rel,
+          $.class_ref,
+          ".",
+          $.id,
+          $.multi,
+        ),
+        seq($.class_ref, ".", $.id, $.multi, $.rel, $.class_ref),
+        seq(
+          $.class_ref,
+          ".",
+          $.id,
+          $.multi,
+          optional($.operand_list),
+          $.class_ref,
+          ".",
+          $.id,
+          $.multi,
+        ),
+        seq(
+          $.class_ref,
+          ".",
+          $.id,
+          $.multi,
+          optional($.operand_list),
+          $.class_ref,
         ),
       ),
 
     multi: ($) =>
       choice(
-        seq("[", $.integer, "]"),
-        seq("[", $.integer, ":", "]"),
-        seq("[", $.integer, ":", $.integer, "]"),
-        seq("[", ":", $.integer, "]"),
+        seq($.arity_open, $.integer, $.arity_close),
+        seq($.arity_open, $.integer, ":", $.arity_close),
+        seq($.arity_open, $.integer, ":", $.integer, $.arity_close),
+        seq($.arity_open, ":", $.integer, $.arity_close),
       ),
+
+    arity_open: ($) => "[",
+    arity_close: ($) => "]",
 
     typedef_stmt: ($) => choice($.typedef_inner, seq($.typedef_inner, $.mls)),
 
@@ -357,20 +347,37 @@ module.exports = grammar({
       prec.left(
         seq(
           choice(
-            seq($.attr_ref, "[", $.operand, "]"),
-            seq($.var_ref, "[", $.operand, "]"),
+            seq($.attr_ref, $.lookup_open, $.operand, $.lookup_close),
+            seq($.var_ref, $.lookup_open, $.operand, $.lookup_close),
           ),
-          repeat(seq("[", $.operand, "]")),
+          repeat(seq($.lookup_open, $.operand, $.lookup_close)),
         ),
       ),
 
-    constructor: ($) => seq($.class_ref, "(", optional($.param_list), ")"),
+    lookup_open: ($) => "[",
+    lookup_close: ($) => "]",
+
+    constructor: ($) =>
+      seq($.class_ref, $.call_open, optional($.param_list), $.call_close),
 
     function_call: ($) =>
       choice(
-        seq($.ns_ref, "(", optional($.function_param_list), ")"),
-        seq($.attr_ref, "(", optional($.function_param_list), ")"),
+        seq(
+          $.ns_ref,
+          $.call_open,
+          optional($.function_param_list),
+          $.call_close,
+        ),
+        seq(
+          $.attr_ref,
+          $.call_open,
+          optional($.function_param_list),
+          $.call_close,
+        ),
       ),
+
+    call_open: ($) => "(",
+    call_close: ($) => ")",
 
     list_def: ($) => seq("[", optional($.operand_list), "]"),
 
@@ -422,12 +429,14 @@ module.exports = grammar({
       ),
 
     pair_list_empty: ($) => $.empty,
-    map_def: ($) => seq("{", optional($.pair_list), "}"),
+    map_def: ($) => seq($.dict_open, optional($.pair_list), $.dict_close),
+    dict_open: ($) => "{",
+    dict_close: ($) => "}",
 
     index_lookup: ($) =>
       choice(
-        seq($.class_ref, "[", optional($.param_list), "]"),
-        seq($.attr_ref, "[", optional($.param_list), "]"),
+        seq($.class_ref, $.lookup_open, optional($.param_list), $.lookup_close),
+        seq($.attr_ref, $.lookup_open, optional($.param_list), $.lookup_close),
       ),
 
     conditional_expression: ($) =>
@@ -514,11 +523,7 @@ module.exports = grammar({
 
     class_ref: ($) =>
       prec.left(
-        choice(
-          $.cid,
-          seq($.id, repeat(seq($.sep, $.id)), $.sep, $.cid),
-          seq($.var_ref, ".", $.cid),
-        ),
+        choice($.cid, seq($.ns_ref, $.sep, $.cid), seq($.var_ref, ".", $.cid)),
       ),
 
     class_ref_list: ($) =>
@@ -529,7 +534,7 @@ module.exports = grammar({
         ),
       ),
 
-    ns_ref: ($) => prec.left(2, seq($.id, repeat(seq($.sep, $.id)))),
+    ns_ref: ($) => prec.left(seq($.id, repeat(seq($.sep, $.id)))),
 
     id_list: ($) => seq(repeat(seq($.id, ",")), $.id),
   },
