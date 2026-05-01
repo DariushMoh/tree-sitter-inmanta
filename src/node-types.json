@@ -418,10 +418,6 @@
           "named": true
         },
         {
-          "type": "regex",
-          "named": true
-        },
-        {
           "type": "rstring",
           "named": true
         },

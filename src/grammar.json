@@ -145,7 +145,7 @@
     },
     "regex": {
       "type": "PATTERN",
-      "value": "matching\\s+\\/([^\\/\\\\\\n]|\\\\.)+\\/"
+      "value": "\\/([^\\/\\\\\\n]|\\\\.)+\\/"
     },
     "colon": {
       "type": "STRING",
@@ -1657,6 +1657,10 @@
             },
             {
               "type": "SYMBOL",
+              "name": "matching_kw"
+            },
+            {
+              "type": "SYMBOL",
               "name": "regex"
             }
           ]
@@ -2787,10 +2791,6 @@
         {
           "type": "SYMBOL",
           "name": "null_kw"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "regex"
         },
         {
           "type": "SYMBOL",

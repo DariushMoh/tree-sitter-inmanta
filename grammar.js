@@ -60,7 +60,7 @@ module.exports = grammar({
     minus_op: ($) => "-",
     division_op: ($) => "/",
     mod_op: ($) => "%",
-    regex: ($) => /matching\s+\/([^\/\\\n]|\\.)+\//,
+    regex: ($) => /\/([^\/\\\n]|\\.)+\//,
     colon: ($) => ":",
 
     // ── Keyword terminals ──────────────────────────────────────────────────
@@ -303,7 +303,7 @@ module.exports = grammar({
     typedef_inner: ($) =>
       choice(
         seq($.typedef_kw, $.id, $.as_kw, $.ns_ref, $.matching_kw, $.expression),
-        seq($.typedef_kw, $.id, $.as_kw, $.ns_ref, $.regex),
+        seq($.typedef_kw, $.id, $.as_kw, $.ns_ref, $.matching_kw, $.regex),
         seq($.typedef_kw, $.cid, $.as_kw, $.constructor),
       ),
 
@@ -480,7 +480,6 @@ module.exports = grammar({
         $.integer,
         $.float,
         $.null_kw,
-        $.regex,
         $.true_kw,
         $.false_kw,
         $.string,
