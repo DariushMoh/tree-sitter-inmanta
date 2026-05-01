@@ -5,7 +5,9 @@
 
 module.exports = grammar({
   name: "inmanta",
+  extras: ($) => [/\s/, $.comment],
   rules: {
+    comment: ($) => /#[^\n]*/,
     // ── Non-keyword terminals ──────────────────────────────────────────────────
 
     // Uppercase-first identifier (entity/class names)

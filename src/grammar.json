@@ -2,6 +2,10 @@
   "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/grammar.schema.json",
   "name": "inmanta",
   "rules": {
+    "comment": {
+      "type": "PATTERN",
+      "value": "#[^\\n]*"
+    },
     "CID": {
       "type": "PATTERN",
       "value": "[A-Z][a-zA-Z_0-9-]*"
@@ -3552,6 +3556,10 @@
     {
       "type": "PATTERN",
       "value": "\\s"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "comment"
     }
   ],
   "conflicts": [],
