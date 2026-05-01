@@ -1,5 +1,6 @@
 module.exports = grammar({
   name: "inmanta",
+  word: ($) => $.id,
   extras: ($) => [/\s/, $.comment],
 
   conflicts: ($) => [
@@ -63,10 +64,10 @@ module.exports = grammar({
     regex: ($) => /matching\s+\/([^\/\\\n]|\\.)+\//,
 
     // ── Keyword terminals ──────────────────────────────────────────────────
+    // Note: dict_kw removed — dict is now part of attr_type_builtin
     and_kw: ($) => "and",
     as_kw: ($) => "as",
     defined_kw: ($) => "defined",
-    dict_kw: ($) => "dict",
     elif_kw: ($) => "elif",
     else_kw: ($) => "else",
     end_kw: ($) => "end",
@@ -173,8 +174,9 @@ module.exports = grammar({
 
     entity_body: ($) => repeat1($.attr),
 
+    // dict included here so it gets @type.builtin like the other primitives
     attr_type_builtin: ($) =>
-      choice("string", "int", "float", "bool", "list", "number"),
+      choice("string", "int", "float", "bool", "list", "number", "dict"),
     attr_base_type: ($) => choice($.attr_type_builtin, $.ns_ref),
     attr_type_multi: ($) => seq($.attr_base_type, "[", "]"),
     attr_type_opt: ($) =>
@@ -192,18 +194,6 @@ module.exports = grammar({
         seq($.attr_type, $.id, "=", $.constant),
         seq($.attr_type, $.id, "=", $.constant_list),
         seq($.attr_type, $.id, "=", $.undef_kw),
-        seq($.dict_kw, optional($.empty), $.cid, optional($.empty)),
-        seq($.dict_kw, optional($.empty), $.cid, "=", $.map_def),
-        seq($.dict_kw, optional($.empty), $.cid, "=", $.null_kw),
-        seq($.dict_kw, "?", $.cid, optional($.empty)),
-        seq($.dict_kw, "?", $.cid, "=", $.map_def),
-        seq($.dict_kw, "?", $.cid, "=", $.null_kw),
-        seq($.dict_kw, $.id),
-        seq($.dict_kw, $.id, "=", $.map_def),
-        seq($.dict_kw, $.id, "=", $.null_kw),
-        seq($.dict_kw, "?", $.id),
-        seq($.dict_kw, "?", $.id, "=", $.map_def),
-        seq($.dict_kw, "?", $.id, "=", $.null_kw),
       ),
 
     implement_ns_list: ($) =>

@@ -82,23 +82,11 @@
           "named": true
         },
         {
-          "type": "dict_kw",
-          "named": true
-        },
-        {
           "type": "empty",
           "named": true
         },
         {
           "type": "id",
-          "named": true
-        },
-        {
-          "type": "map_def",
-          "named": true
-        },
-        {
-          "type": "null_kw",
           "named": true
         },
         {
@@ -1759,8 +1747,8 @@
     "named": true
   },
   {
-    "type": "dict_kw",
-    "named": true
+    "type": "dict",
+    "named": false
   },
   {
     "type": "division_op",
