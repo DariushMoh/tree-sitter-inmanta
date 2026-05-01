@@ -789,9 +789,47 @@
         "name": "attr"
       }
     },
+    "attr_type_builtin": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "string"
+        },
+        {
+          "type": "STRING",
+          "value": "int"
+        },
+        {
+          "type": "STRING",
+          "value": "float"
+        },
+        {
+          "type": "STRING",
+          "value": "bool"
+        },
+        {
+          "type": "STRING",
+          "value": "list"
+        },
+        {
+          "type": "STRING",
+          "value": "number"
+        }
+      ]
+    },
     "attr_base_type": {
-      "type": "SYMBOL",
-      "name": "ns_ref"
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "attr_type_builtin"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "ns_ref"
+        }
+      ]
     },
     "attr_type_multi": {
       "type": "SEQ",

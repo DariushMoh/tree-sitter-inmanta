@@ -173,7 +173,9 @@ module.exports = grammar({
 
     entity_body: ($) => repeat1($.attr),
 
-    attr_base_type: ($) => $.ns_ref,
+    attr_type_builtin: ($) =>
+      choice("string", "int", "float", "bool", "list", "number"),
+    attr_base_type: ($) => choice($.attr_type_builtin, $.ns_ref),
     attr_type_multi: ($) => seq($.attr_base_type, "[", "]"),
     attr_type_opt: ($) =>
       choice(seq($.attr_type_multi, "?"), seq($.attr_base_type, "?")),
