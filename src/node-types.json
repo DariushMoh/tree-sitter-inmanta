@@ -82,10 +82,6 @@
           "named": true
         },
         {
-          "type": "empty",
-          "named": true
-        },
-        {
           "type": "id",
           "named": true
         },
@@ -223,10 +219,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "empty",
-          "named": true
-        },
         {
           "type": "top_stmt",
           "named": true
@@ -557,7 +549,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
@@ -578,10 +570,6 @@
         },
         {
           "type": "constructor",
-          "named": true
-        },
-        {
-          "type": "empty",
           "named": true
         },
         {
@@ -739,10 +727,6 @@
       "required": true,
       "types": [
         {
-          "type": "empty",
-          "named": true
-        },
-        {
           "type": "mls",
           "named": true
         }
@@ -804,10 +788,6 @@
           "named": true
         },
         {
-          "type": "empty",
-          "named": true
-        },
-        {
           "type": "if_body",
           "named": true
         },
@@ -851,10 +831,6 @@
       "types": [
         {
           "type": "class_ref",
-          "named": true
-        },
-        {
-          "type": "empty",
           "named": true
         },
         {
@@ -1245,13 +1221,9 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
-        {
-          "type": "empty",
-          "named": true
-        },
         {
           "type": "expression",
           "named": true
@@ -1395,10 +1367,6 @@
       "required": true,
       "types": [
         {
-          "type": "empty",
-          "named": true
-        },
-        {
           "type": "mls",
           "named": true
         },
@@ -1445,15 +1413,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
           "type": "assign",
-          "named": true
-        },
-        {
-          "type": "empty",
           "named": true
         },
         {
@@ -1479,10 +1443,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "empty",
-          "named": true
-        },
         {
           "type": "statement",
           "named": true
@@ -1589,10 +1549,6 @@
       "required": true,
       "types": [
         {
-          "type": "empty",
-          "named": true
-        },
-        {
           "type": "mls",
           "named": true
         },
@@ -1608,15 +1564,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
           "type": "attr_ref",
-          "named": true
-        },
-        {
-          "type": "empty",
           "named": true
         },
         {

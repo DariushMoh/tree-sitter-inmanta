@@ -4,12 +4,13 @@ module.exports = grammar({
   extras: ($) => [/\s/, $.comment],
 
   conflicts: ($) => [
+    [$.head, $.constant],
+    [$.typedef_stmt],
     [$.expression, $.boolean_expression],
     [$.expression, $.arithmetic_expression],
     [$.expression, $.conditional_expression],
     [$.var_ref, $.attr_ref],
     [$.var_ref, $.ns_ref],
-    [$.var_ref],
     [$.class_ref, $.ns_ref],
     [$.class_ref, $.var_ref],
     [$.function_call, $.ns_ref],
@@ -23,11 +24,7 @@ module.exports = grammar({
     [$.operand_list],
     [$.implement_ns_list],
     [$.class_ref_list],
-    [$.head, $.constant],
-    [$.head, $.body],
     [$.relation],
-    [$.typedef_stmt],
-    [$.stmt_list, $.if_next],
     [$.implement_def],
     [$.param_list, $.param_list_empty],
     [$.function_param_list, $.function_param_list_empty],
@@ -35,13 +32,10 @@ module.exports = grammar({
     [$.pair_list, $.pair_list_empty],
     [$.relation_def, $.index_lookup],
     [$.relation_def, $.constructor],
-    [$.relation_def, $.implement_def],
-    [$.relation, $.implement_def],
   ],
 
   rules: {
-    main: ($) =>
-      choice(seq($.head, optional($.body)), seq(optional($.head), $.body)),
+    main: ($) => choice(seq($.head, optional($.body)), $.body),
 
     comment: ($) => /#[^\n]*/,
 
@@ -96,9 +90,9 @@ module.exports = grammar({
     when_kw: ($) => "when",
 
     // ── Structural rules ───────────────────────────────────────────────────
+    head: ($) => $.mls,
     empty: ($) => choice(),
-    head: ($) => choice($.empty, $.mls),
-    body: ($) => seq(repeat($.top_stmt), choice($.empty, $.top_stmt)),
+    body: ($) => repeat1($.top_stmt),
     top_stmt: ($) =>
       choice(
         $.entity_def,
@@ -117,15 +111,9 @@ module.exports = grammar({
         seq($.import_kw, $.ns_ref, $.as_kw, $.id),
       ),
 
-    statement: ($) =>
-      choice(
-        $.assign,
-        $.for_stmt,
-        $.if_stmt,
-        seq($.expression, optional($.empty)),
-      ),
+    statement: ($) => choice($.assign, $.for_stmt, $.if_stmt, $.expression),
 
-    stmt_list: ($) => seq(repeat($.statement), choice($.empty, $.statement)),
+    stmt_list: ($) => repeat1($.statement),
 
     assign: ($) =>
       choice(seq($.var_ref, "=", $.operand), seq($.var_ref, $.peq, $.operand)),
@@ -139,7 +127,6 @@ module.exports = grammar({
 
     if_next: ($) =>
       choice(
-        $.empty,
         seq($.else_kw, ":", optional($.stmt_list)),
         seq($.elif_kw, $.if_body),
       ),
@@ -188,7 +175,7 @@ module.exports = grammar({
 
     attr: ($) =>
       choice(
-        seq($.attr_type, $.cid, optional($.empty)),
+        seq($.attr_type, $.cid),
         seq($.attr_type, $.cid, "=", $.constant),
         seq($.attr_type, $.cid, "=", $.constant_list),
         seq($.attr_type, $.cid, "=", $.undef_kw),
@@ -208,13 +195,7 @@ module.exports = grammar({
 
     implement_def: ($) =>
       choice(
-        seq(
-          $.implement_kw,
-          $.class_ref,
-          $.using_kw,
-          $.implement_ns_list,
-          optional($.empty),
-        ),
+        seq($.implement_kw, $.class_ref, $.using_kw, $.implement_ns_list),
         seq(
           $.implement_kw,
           $.class_ref,
@@ -229,7 +210,6 @@ module.exports = grammar({
           $.implement_ns_list,
           $.when_kw,
           $.expression,
-          optional($.empty),
         ),
         seq(
           $.implement_kw,
@@ -255,11 +235,7 @@ module.exports = grammar({
     implementation_head: ($) => choice(":", seq(":", $.mls)),
     block: ($) => seq(optional($.stmt_list), $.end_kw),
 
-    relation: ($) =>
-      choice(
-        seq($.relation_def, $.mls),
-        seq($.relation_def, optional($.empty)),
-      ),
+    relation: ($) => choice(seq($.relation_def, $.mls), $.relation_def),
 
     relation_def: ($) =>
       choice(
@@ -304,11 +280,7 @@ module.exports = grammar({
         seq("[", ":", $.integer, "]"),
       ),
 
-    typedef_stmt: ($) =>
-      choice(
-        seq($.typedef_inner, optional($.empty)),
-        seq($.typedef_inner, $.mls),
-      ),
+    typedef_stmt: ($) => choice($.typedef_inner, seq($.typedef_inner, $.mls)),
 
     typedef_inner: ($) =>
       choice(
@@ -325,12 +297,12 @@ module.exports = grammar({
           $.boolean_expression,
           $.constant,
           $.function_call,
-          seq($.var_ref, optional($.empty)),
+          $.var_ref,
           $.constructor,
           $.list_def,
           $.list_comprehension,
           $.map_def,
-          seq($.map_lookup, optional($.empty)),
+          $.map_lookup,
           $.index_lookup,
           $.conditional_expression,
           $.arithmetic_expression,
@@ -365,7 +337,7 @@ module.exports = grammar({
         ),
       ),
 
-    operand: ($) => prec.left(seq($.expression, optional($.empty))),
+    operand: ($) => $.expression,
 
     map_lookup: ($) =>
       prec.left(
@@ -522,13 +494,7 @@ module.exports = grammar({
         ),
       ),
 
-    var_ref: ($) =>
-      prec.left(
-        choice(
-          seq($.attr_ref, optional($.empty)),
-          seq($.ns_ref, optional($.empty)),
-        ),
-      ),
+    var_ref: ($) => prec.left(choice($.attr_ref, $.ns_ref)),
 
     attr_ref: ($) => prec.left(seq($.var_ref, ".", $.id)),
 
