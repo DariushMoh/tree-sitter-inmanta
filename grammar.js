@@ -1,29 +1,57 @@
-/**
- * Tree-sitter grammar for the Inmanta configuration modelling language.
- * Derived from src/inmanta/parser/plyInmantaLex.py and plyInmantaParser.py.
- */
-
 module.exports = grammar({
   name: "inmanta",
   extras: ($) => [/\s/, $.comment],
+
+  conflicts: ($) => [
+    [$.expression, $.boolean_expression],
+    [$.expression, $.arithmetic_expression],
+    [$.expression, $.conditional_expression],
+    [$.var_ref, $.attr_ref],
+    [$.var_ref, $.ns_ref],
+    [$.var_ref],
+    [$.class_ref, $.ns_ref],
+    [$.class_ref, $.var_ref],
+    [$.function_call, $.ns_ref],
+    [$.function_call, $.attr_ref],
+    [$.map_lookup, $.var_ref],
+    [$.map_lookup, $.attr_ref],
+    [$.index_lookup, $.class_ref],
+    [$.index_lookup, $.attr_ref],
+    [$.param_list, $.param_list_element],
+    [$.function_param_list, $.function_param_list_element],
+    [$.operand_list],
+    [$.implement_ns_list],
+    [$.class_ref_list],
+    [$.head, $.constant],
+    [$.head, $.body],
+    [$.relation],
+    [$.typedef_stmt],
+    [$.stmt_list, $.if_next],
+    [$.implement_def],
+    [$.param_list, $.param_list_empty],
+    [$.function_param_list, $.function_param_list_empty],
+    [$.implementation_head],
+    [$.pair_list, $.pair_list_empty],
+    [$.relation_def, $.index_lookup],
+    [$.relation_def, $.constructor],
+  ],
+
   rules: {
+    main: ($) =>
+      choice(seq($.head, optional($.body)), seq(optional($.head), $.body)),
+
     comment: ($) => /#[^\n]*/,
 
-    // ── Non-keyword terminals ──────────────────────────────────────────────────
-
+    // ── Non-keyword terminals ──────────────────────────────────────────────
     cid: ($) => /[A-Z][a-zA-Z_0-9-]*/,
     id: ($) => /[a-z_][a-zA-Z_0-9-]*/,
-
     integer: ($) => /-?[0-9]+/,
     float: ($) => /-?[0-9]*\.[0-9]+/,
-
     sep: ($) => "::",
-
     string: ($) => /("([^"\\\n]|\\.)*")|('([^'\\\n]|\\.)*')/,
     fstring: ($) => /(f"([^"\\\n]|\\.)*")|(f'([^'\\\n]|\\.)*')/,
     rstring: ($) => /(r"([^"\\\n]|\\.)*")|(r'([^'\\\n]|\\.)*')/,
     mls: ($) => /"{3,5}[\s\S]*?"{3,5}/,
-
     cmp_op: ($) => choice("==", "!=", "<=", ">=", "<", ">"),
     rel: ($) => choice("--", "->", "<-"),
     peq: ($) => "+=",
@@ -31,45 +59,40 @@ module.exports = grammar({
     plus_op: ($) => "+",
     minus_op: ($) => "-",
     division_op: ($) => "/",
-    mod: ($) => "%",
-
+    mod_op: ($) => "%",
     regex: ($) => /matching\s+\/([^\/\\\n]|\\.)+\//,
 
-    // ── Keyword terminals ──────────────────────────────────────────────────────
+    // ── Keyword terminals ──────────────────────────────────────────────────
+    and_kw: ($) => "and",
+    as_kw: ($) => "as",
+    defined_kw: ($) => "defined",
+    dict_kw: ($) => "dict",
+    elif_kw: ($) => "elif",
+    else_kw: ($) => "else",
+    end_kw: ($) => "end",
+    entity_kw: ($) => "entity",
+    extends_kw: ($) => "extends",
+    false_kw: ($) => "false",
+    for_kw: ($) => "for",
+    if_kw: ($) => "if",
+    implement_kw: ($) => "implement",
+    implementation_kw: ($) => "implementation",
+    import_kw: ($) => "import",
+    in_kw: ($) => "in",
+    index_kw: ($) => "index",
+    is_kw: ($) => "is",
+    matching_kw: ($) => "matching",
+    not_kw: ($) => "not",
+    null_kw: ($) => "null",
+    or_kw: ($) => "or",
+    parents_kw: ($) => "parents",
+    true_kw: ($) => "true",
+    typedef_kw: ($) => "typedef",
+    undef_kw: ($) => "undef",
+    using_kw: ($) => "using",
+    when_kw: ($) => "when",
 
-    and: ($) => "and",
-    as: ($) => "as",
-    defined: ($) => "defined",
-    dict: ($) => "dict",
-    elif: ($) => "elif",
-    else: ($) => "else",
-    end: ($) => "end",
-    entity: ($) => "entity",
-    extends: ($) => "extends",
-    false: ($) => "false",
-    for: ($) => "for",
-    if: ($) => "if",
-    implement: ($) => "implement",
-    implementation: ($) => "implementation",
-    import: ($) => "import",
-    in: ($) => "in",
-    index: ($) => "index",
-    is: ($) => "is",
-    matching: ($) => "matching",
-    not: ($) => "not",
-    null: ($) => "null",
-    or: ($) => "or",
-    parents: ($) => "parents",
-    true: ($) => "true",
-    typedef: ($) => "typedef",
-    undef: ($) => "undef",
-    using: ($) => "using",
-    when: ($) => "when",
-
-    // ── Structural rules ───────────────────────────────────────────────────────
-
-    main: ($) =>
-      choice(seq($.head, optional($.body)), seq(optional($.head), $.body)),
+    // ── Structural rules ───────────────────────────────────────────────────
     empty: ($) => choice(),
     head: ($) => choice($.empty, $.mls),
     body: ($) => seq(repeat($.top_stmt), choice($.empty, $.top_stmt)),
@@ -80,126 +103,170 @@ module.exports = grammar({
         $.implementation_def,
         $.relation,
         $.statement,
-        $.typedef,
-        $.index,
-        $.import,
+        $.typedef_stmt,
+        $.index_stmt,
+        $.import_stmt,
       ),
-    import: ($) =>
-      choice(seq($.import, $.ns_ref), seq($.import, $.ns_ref, $.as, $.id)),
+
+    import_stmt: ($) =>
+      choice(
+        seq($.import_kw, $.ns_ref),
+        seq($.import_kw, $.ns_ref, $.as_kw, $.id),
+      ),
+
     statement: ($) =>
-      choice($.assign, $.for, $.if, seq($.expression, optional($.empty))),
+      choice(
+        $.assign,
+        $.for_stmt,
+        $.if_stmt,
+        seq($.expression, optional($.empty)),
+      ),
+
     stmt_list: ($) => seq(repeat($.statement), choice($.empty, $.statement)),
+
     assign: ($) =>
       choice(seq($.var_ref, "=", $.operand), seq($.var_ref, $.peq, $.operand)),
-    for: ($) => seq($.for, $.id, $.in, $.operand, ":", $.block),
-    if: ($) => seq($.if, $.if_body, $.end),
+
+    for_stmt: ($) => seq($.for_kw, $.id, $.in_kw, $.operand, ":", $.block),
+
+    if_stmt: ($) => seq($.if_kw, $.if_body, $.end_kw),
+
     if_body: ($) =>
       seq($.expression, ":", optional($.stmt_list), optional($.if_next)),
+
     if_next: ($) =>
       choice(
         $.empty,
-        seq($.else, ":", optional($.stmt_list)),
-        seq($.elif, $.if_body),
+        seq($.else_kw, ":", optional($.stmt_list)),
+        seq($.elif_kw, $.if_body),
       ),
+
     entity_def: ($) =>
       choice(
-        seq($.entity, $.cid, ":", $.entity_body_outer),
-        seq($.entity, $.id, ":", $.entity_body_outer),
+        seq($.entity_kw, $.cid, ":", $.entity_body_outer),
+        seq($.entity_kw, $.id, ":", $.entity_body_outer),
         seq(
-          $.entity,
+          $.entity_kw,
           $.cid,
-          $.extends,
+          $.extends_kw,
           $.class_ref_list,
           ":",
           $.entity_body_outer,
         ),
         seq(
-          $.entity,
+          $.entity_kw,
           $.id,
-          $.extends,
+          $.extends_kw,
           $.class_ref_list,
           ":",
           $.entity_body_outer,
         ),
       ),
+
     entity_body_outer: ($) =>
       choice(
-        seq($.mls, $.entity_body, $.end),
-        seq($.entity_body, $.end),
-        $.end,
-        seq($.mls, $.end),
+        seq($.mls, $.entity_body, $.end_kw),
+        seq($.entity_body, $.end_kw),
+        $.end_kw,
+        seq($.mls, $.end_kw),
       ),
+
     entity_body: ($) => repeat1($.attr),
+
     attr_base_type: ($) => $.ns_ref,
     attr_type_multi: ($) => seq($.attr_base_type, "[", "]"),
     attr_type_opt: ($) =>
       choice(seq($.attr_type_multi, "?"), seq($.attr_base_type, "?")),
     attr_type: ($) =>
       choice($.attr_type_opt, $.attr_type_multi, $.attr_base_type),
+
     attr: ($) =>
       choice(
         seq($.attr_type, $.cid, optional($.empty)),
         seq($.attr_type, $.cid, "=", $.constant),
         seq($.attr_type, $.cid, "=", $.constant_list),
-        seq($.attr_type, $.cid, "=", $.undef),
+        seq($.attr_type, $.cid, "=", $.undef_kw),
         seq($.attr_type, $.id),
         seq($.attr_type, $.id, "=", $.constant),
         seq($.attr_type, $.id, "=", $.constant_list),
-        seq($.attr_type, $.id, "=", $.undef),
-        seq($.dict, optional($.empty), $.cid, optional($.empty)),
-        seq($.dict, optional($.empty), $.cid, "=", $.map_def),
-        seq($.dict, optional($.empty), $.cid, "=", $.null),
-        seq($.dict, "?", $.cid, optional($.empty)),
-        seq($.dict, "?", $.cid, "=", $.map_def),
-        seq($.dict, "?", $.cid, "=", $.null),
-        seq($.dict, $.id),
-        seq($.dict, $.id, "=", $.map_def),
-        seq($.dict, $.id, "=", $.null),
-        seq($.dict, "?", $.id),
-        seq($.dict, "?", $.id, "=", $.map_def),
-        seq($.dict, "?", $.id, "=", $.null),
+        seq($.attr_type, $.id, "=", $.undef_kw),
+        seq($.dict_kw, optional($.empty), $.cid, optional($.empty)),
+        seq($.dict_kw, optional($.empty), $.cid, "=", $.map_def),
+        seq($.dict_kw, optional($.empty), $.cid, "=", $.null_kw),
+        seq($.dict_kw, "?", $.cid, optional($.empty)),
+        seq($.dict_kw, "?", $.cid, "=", $.map_def),
+        seq($.dict_kw, "?", $.cid, "=", $.null_kw),
+        seq($.dict_kw, $.id),
+        seq($.dict_kw, $.id, "=", $.map_def),
+        seq($.dict_kw, $.id, "=", $.null_kw),
+        seq($.dict_kw, "?", $.id),
+        seq($.dict_kw, "?", $.id, "=", $.map_def),
+        seq($.dict_kw, "?", $.id, "=", $.null_kw),
       ),
+
     implement_ns_list: ($) =>
-      seq(choice($.ns_ref, $.parents), repeat(seq(",", $.implement_ns_list))),
+      prec.left(
+        seq(
+          choice($.ns_ref, $.parents_kw),
+          repeat(seq(",", choice($.ns_ref, $.parents_kw))),
+        ),
+      ),
+
     implement_def: ($) =>
       choice(
         seq(
-          $.implement,
+          $.implement_kw,
           $.class_ref,
-          $.using,
+          $.using_kw,
           $.implement_ns_list,
           optional($.empty),
         ),
-        seq($.implement, $.class_ref, $.using, $.implement_ns_list, $.mls),
         seq(
-          $.implement,
+          $.implement_kw,
           $.class_ref,
-          $.using,
+          $.using_kw,
           $.implement_ns_list,
-          $.when,
+          $.mls,
+        ),
+        seq(
+          $.implement_kw,
+          $.class_ref,
+          $.using_kw,
+          $.implement_ns_list,
+          $.when_kw,
           $.expression,
           optional($.empty),
         ),
         seq(
-          $.implement,
+          $.implement_kw,
           $.class_ref,
-          $.using,
+          $.using_kw,
           $.implement_ns_list,
-          $.when,
+          $.when_kw,
           $.expression,
           $.mls,
         ),
       ),
+
     implementation_def: ($) =>
-      seq($.implementation, $.id, $.for, $.class_ref, $.implementation),
-    implementation: ($) => seq($.implementation_head, $.block),
+      seq(
+        $.implementation_kw,
+        $.id,
+        $.for_kw,
+        $.class_ref,
+        $.implementation_body,
+      ),
+
+    implementation_body: ($) => seq($.implementation_head, $.block),
     implementation_head: ($) => choice(":", seq(":", $.mls)),
-    block: ($) => seq(optional($.stmt_list), $.end),
+    block: ($) => seq(optional($.stmt_list), $.end_kw),
+
     relation: ($) =>
       choice(
         seq($.relation_def, $.mls),
         seq($.relation_def, optional($.empty)),
       ),
+
     relation_def: ($) =>
       choice(
         seq(
@@ -234,6 +301,7 @@ module.exports = grammar({
           $.class_ref,
         ),
       ),
+
     multi: ($) =>
       choice(
         seq("[", $.integer, "]"),
@@ -241,71 +309,91 @@ module.exports = grammar({
         seq("[", $.integer, ":", $.integer, "]"),
         seq("[", ":", $.integer, "]"),
       ),
-    typedef: ($) =>
+
+    typedef_stmt: ($) =>
       choice(
         seq($.typedef_inner, optional($.empty)),
         seq($.typedef_inner, $.mls),
       ),
+
     typedef_inner: ($) =>
       choice(
-        seq($.typedef, $.id, $.as, $.ns_ref, $.matching, $.expression),
-        seq($.typedef, $.id, $.as, $.ns_ref, $.regex),
-        seq($.typedef, $.cid, $.as, $.constructor),
+        seq($.typedef_kw, $.id, $.as_kw, $.ns_ref, $.matching_kw, $.expression),
+        seq($.typedef_kw, $.id, $.as_kw, $.ns_ref, $.regex),
+        seq($.typedef_kw, $.cid, $.as_kw, $.constructor),
       ),
-    index: ($) => seq($.index, $.class_ref, "(", $.id_list, ")"),
+
+    index_stmt: ($) => seq($.index_kw, $.class_ref, "(", $.id_list, ")"),
+
     expression: ($) =>
-      choice(
-        $.boolean_expression,
-        $.constant,
-        $.function_call,
-        seq($.var_ref, optional($.empty)),
-        $.constructor,
-        $.list_def,
-        $.list_comprehension,
-        $.map_def,
-        seq($.map_lookup, optional($.empty)),
-        $.index_lookup,
-        $.conditional_expression,
-        $.arithmetic_expression,
-        seq("(", $.expression, ")"),
-      ),
-    boolean_expression: ($) =>
-      choice(
-        seq($.expression, $.cmp_op, $.expression),
-        seq($.expression, $.in, $.expression),
-        seq($.expression, $.and, $.expression),
-        seq($.expression, $.or, $.expression),
-        seq($.expression, $.not, $.in, $.expression),
-        seq($.not, $.expression),
-        seq($.var_ref, ".", $.id, $.is, $.defined),
-        seq($.id, $.is, $.defined),
-        seq($.map_lookup, $.is, $.defined),
-      ),
-    arithmetic_expression: ($) =>
-      choice(
-        seq($.expression, $.plus_op, $.expression),
-        seq($.expression, $.minus_op, $.expression),
-        seq($.expression, $.division_op, $.expression),
-        seq($.expression, "*", $.expression),
-        seq($.expression, $.mod, $.expression),
-        seq($.expression, $.double_star, $.expression),
-      ),
-    operand: ($) => seq($.expression, optional($.empty)),
-    map_lookup: ($) =>
-      seq(
+      prec.left(
         choice(
-          seq($.attr_ref, "[", $.operand, "]"),
-          seq($.var_ref, "[", $.operand, "]"),
+          $.boolean_expression,
+          $.constant,
+          $.function_call,
+          seq($.var_ref, optional($.empty)),
+          $.constructor,
+          $.list_def,
+          $.list_comprehension,
+          $.map_def,
+          seq($.map_lookup, optional($.empty)),
+          $.index_lookup,
+          $.conditional_expression,
+          $.arithmetic_expression,
+          seq("(", $.expression, ")"),
         ),
-        repeat(seq("[", $.operand, "]")),
       ),
+
+    boolean_expression: ($) =>
+      prec.left(
+        choice(
+          prec.left(1, seq($.expression, $.cmp_op, $.expression)),
+          prec.left(1, seq($.expression, $.in_kw, $.expression)),
+          prec.left(1, seq($.expression, $.and_kw, $.expression)),
+          prec.left(1, seq($.expression, $.or_kw, $.expression)),
+          prec.left(1, seq($.expression, $.not_kw, $.in_kw, $.expression)),
+          prec.left(1, seq($.not_kw, $.expression)),
+          seq($.var_ref, ".", $.id, $.is_kw, $.defined_kw),
+          seq($.id, $.is_kw, $.defined_kw),
+          seq($.map_lookup, $.is_kw, $.defined_kw),
+        ),
+      ),
+
+    arithmetic_expression: ($) =>
+      prec.left(
+        choice(
+          prec.left(2, seq($.expression, $.plus_op, $.expression)),
+          prec.left(2, seq($.expression, $.minus_op, $.expression)),
+          prec.left(2, seq($.expression, $.division_op, $.expression)),
+          prec.left(3, seq($.expression, "*", $.expression)),
+          prec.left(3, seq($.expression, $.mod_op, $.expression)),
+          prec.left(4, seq($.expression, $.double_star, $.expression)),
+        ),
+      ),
+
+    operand: ($) => prec.left(seq($.expression, optional($.empty))),
+
+    map_lookup: ($) =>
+      prec.left(
+        seq(
+          choice(
+            seq($.attr_ref, "[", $.operand, "]"),
+            seq($.var_ref, "[", $.operand, "]"),
+          ),
+          repeat(seq("[", $.operand, "]")),
+        ),
+      ),
+
     constructor: ($) => seq($.class_ref, "(", optional($.param_list), ")"),
+
     function_call: ($) =>
       choice(
         seq($.ns_ref, "(", optional($.function_param_list), ")"),
         seq($.attr_ref, "(", optional($.function_param_list), ")"),
       ),
+
     list_def: ($) => seq("[", optional($.operand_list), "]"),
+
     list_comprehension: ($) =>
       seq(
         "[",
@@ -314,116 +402,157 @@ module.exports = grammar({
         optional($.list_comprehension_guard),
         "]",
       ),
+
     list_comprehension_for_empty: ($) => $.empty,
+
     list_comprehension_for: ($) =>
       seq(
-        repeat(seq($.for, $.id, $.in, $.expression)),
-        $.for,
+        repeat(seq($.for_kw, $.id, $.in_kw, $.expression)),
+        $.for_kw,
         $.id,
-        $.in,
+        $.in_kw,
         $.expression,
         optional($.list_comprehension_for_empty),
       ),
+
     list_comprehension_guard: ($) =>
       seq(
-        repeat(seq($.if, $.expression)),
-        choice($.empty, seq($.if, $.expression)),
+        repeat(seq($.if_kw, $.expression)),
+        choice($.empty, seq($.if_kw, $.expression)),
       ),
+
     dict_key: ($) => choice($.rstring, $.string),
+
     pair_list: ($) =>
-      seq(
-        repeat(seq($.dict_key, ":", $.operand, ",")),
-        choice(
-          seq(
-            $.dict_key,
-            ":",
-            $.operand,
-            optional($.empty),
-            optional($.pair_list_empty),
+      prec.left(
+        seq(
+          repeat(seq($.dict_key, ":", $.operand, ",")),
+          choice(
+            seq(
+              $.dict_key,
+              ":",
+              $.operand,
+              optional($.empty),
+              optional($.pair_list_empty),
+            ),
+            $.pair_list_empty,
+            seq($.dict_key, ":", $.operand, ","),
           ),
-          $.pair_list_empty,
-          seq($.dict_key, ":", $.operand, ","),
         ),
       ),
+
     pair_list_empty: ($) => $.empty,
     map_def: ($) => seq("{", optional($.pair_list), "}"),
+
     index_lookup: ($) =>
       choice(
         seq($.class_ref, "[", optional($.param_list), "]"),
         seq($.attr_ref, "[", optional($.param_list), "]"),
       ),
+
     conditional_expression: ($) =>
-      seq($.expression, "?", $.expression, ":", $.expression),
+      prec.left(seq($.expression, "?", $.expression, ":", $.expression)),
+
     constant: ($) =>
       choice(
         $.integer,
         $.float,
-        $.null,
+        $.null_kw,
         $.regex,
-        $.true,
-        $.false,
+        $.true_kw,
+        $.false_kw,
         $.string,
         $.fstring,
         $.rstring,
         $.mls,
       ),
+
     constant_list: ($) => seq("[", optional($.constants), "]"),
+
     constants: ($) =>
-      seq(
-        repeat(seq($.constant, ",")),
-        choice($.constant, seq($.constant, ",")),
+      prec.left(
+        seq(
+          repeat(seq($.constant, ",")),
+          choice($.constant, seq($.constant, ",")),
+        ),
       ),
+
     wrapped_kwargs: ($) => seq($.double_star, $.operand),
+
     param_list_element: ($) =>
       choice(seq($.id, "=", $.operand), $.wrapped_kwargs),
+
     param_list: ($) =>
-      seq(
-        repeat(seq($.param_list_element, ",")),
-        choice(
-          $.param_list_empty,
-          seq(
-            $.param_list_element,
-            optional($.empty),
-            optional($.param_list_empty),
+      prec.left(
+        seq(
+          repeat(seq($.param_list_element, ",")),
+          choice(
+            $.param_list_empty,
+            seq(
+              $.param_list_element,
+              optional($.empty),
+              optional($.param_list_empty),
+            ),
+            seq($.param_list_element, ","),
           ),
-          seq($.param_list_element, ","),
         ),
       ),
+
     param_list_empty: ($) => $.empty,
+
     function_param_list_element: ($) => choice($.param_list_element, $.operand),
+
     function_param_list: ($) =>
-      seq(
-        repeat(seq($.function_param_list_element, ",")),
-        choice(
-          $.function_param_list_empty,
-          seq(
-            $.function_param_list_element,
-            optional($.empty),
-            optional($.function_param_list_empty),
+      prec.left(
+        seq(
+          repeat(seq($.function_param_list_element, ",")),
+          choice(
+            $.function_param_list_empty,
+            seq(
+              $.function_param_list_element,
+              optional($.empty),
+              optional($.function_param_list_empty),
+            ),
+            seq($.function_param_list_element, ","),
           ),
-          seq($.function_param_list_element, ","),
         ),
       ),
+
     function_param_list_empty: ($) => $.empty,
+
     operand_list: ($) =>
-      seq(
-        repeat(seq($.operand, ",")),
-        choice($.operand, $.empty, seq($.operand, ",")),
+      prec.left(
+        seq(
+          repeat(seq($.operand, ",")),
+          choice($.operand, $.empty, seq($.operand, ",")),
+        ),
       ),
+
     var_ref: ($) =>
-      choice(
-        seq($.attr_ref, optional($.empty)),
-        seq($.ns_ref, optional($.empty)),
+      prec.left(
+        choice(
+          seq($.attr_ref, optional($.empty)),
+          seq($.ns_ref, optional($.empty)),
+        ),
       ),
-    attr_ref: ($) => seq($.var_ref, ".", $.id),
+
+    attr_ref: ($) => prec.left(seq($.var_ref, ".", $.id)),
+
     class_ref: ($) =>
-      choice($.cid, seq($.ns_ref, $.sep, $.cid), seq($.var_ref, ".", $.cid)),
-    class_ref_list: ($) =>
-      seq(
-        repeat(choice(seq($.class_ref, ","), seq($.var_ref, ","))),
-        choice($.class_ref, $.var_ref),
+      prec.left(
+        choice($.cid, seq($.ns_ref, $.sep, $.cid), seq($.var_ref, ".", $.cid)),
       ),
-    ns_ref: ($) => seq($.id, repeat(seq($.sep, $.id))),
+
+    class_ref_list: ($) =>
+      prec.left(
+        seq(
+          repeat(choice(seq($.class_ref, ","), seq($.var_ref, ","))),
+          choice($.class_ref, $.var_ref),
+        ),
+      ),
+
+    ns_ref: ($) => prec.left(seq($.id, repeat(seq($.sep, $.id)))),
+
     id_list: ($) => seq(repeat(seq($.id, ",")), $.id),
   },
 });
