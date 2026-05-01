@@ -147,6 +147,10 @@
       "type": "PATTERN",
       "value": "matching\\s+\\/([^\\/\\\\\\n]|\\\\.)+\\/"
     },
+    "colon": {
+      "type": "STRING",
+      "value": ":"
+    },
     "and_kw": {
       "type": "STRING",
       "value": "and"
@@ -515,8 +519,8 @@
           "name": "operand"
         },
         {
-          "type": "STRING",
-          "value": ":"
+          "type": "SYMBOL",
+          "name": "colon"
         },
         {
           "type": "SYMBOL",
@@ -549,8 +553,8 @@
           "name": "expression"
         },
         {
-          "type": "STRING",
-          "value": ":"
+          "type": "SYMBOL",
+          "name": "colon"
         },
         {
           "type": "CHOICE",
@@ -589,8 +593,8 @@
               "name": "else_kw"
             },
             {
-              "type": "STRING",
-              "value": ":"
+              "type": "SYMBOL",
+              "name": "colon"
             },
             {
               "type": "CHOICE",
@@ -636,8 +640,8 @@
               "name": "cid"
             },
             {
-              "type": "STRING",
-              "value": ":"
+              "type": "SYMBOL",
+              "name": "colon"
             },
             {
               "type": "SYMBOL",
@@ -657,8 +661,8 @@
               "name": "id"
             },
             {
-              "type": "STRING",
-              "value": ":"
+              "type": "SYMBOL",
+              "name": "colon"
             },
             {
               "type": "SYMBOL",
@@ -686,8 +690,8 @@
               "name": "class_ref_list"
             },
             {
-              "type": "STRING",
-              "value": ":"
+              "type": "SYMBOL",
+              "name": "colon"
             },
             {
               "type": "SYMBOL",
@@ -715,8 +719,8 @@
               "name": "class_ref_list"
             },
             {
-              "type": "STRING",
-              "value": ":"
+              "type": "SYMBOL",
+              "name": "colon"
             },
             {
               "type": "SYMBOL",
@@ -1255,15 +1259,15 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "STRING",
-          "value": ":"
+          "type": "SYMBOL",
+          "name": "colon"
         },
         {
           "type": "SEQ",
           "members": [
             {
-              "type": "STRING",
-              "value": ":"
+              "type": "SYMBOL",
+              "name": "colon"
             },
             {
               "type": "SYMBOL",
@@ -1509,8 +1513,8 @@
               "name": "integer"
             },
             {
-              "type": "STRING",
-              "value": ":"
+              "type": "SYMBOL",
+              "name": "arity_colon"
             },
             {
               "type": "SYMBOL",
@@ -1530,8 +1534,8 @@
               "name": "integer"
             },
             {
-              "type": "STRING",
-              "value": ":"
+              "type": "SYMBOL",
+              "name": "arity_colon"
             },
             {
               "type": "SYMBOL",
@@ -1551,8 +1555,8 @@
               "name": "arity_open"
             },
             {
-              "type": "STRING",
-              "value": ":"
+              "type": "SYMBOL",
+              "name": "arity_colon"
             },
             {
               "type": "SYMBOL",
@@ -1565,6 +1569,10 @@
           ]
         }
       ]
+    },
+    "arity_colon": {
+      "type": "STRING",
+      "value": ":"
     },
     "arity_open": {
       "type": "STRING",
@@ -2540,8 +2548,8 @@
                   "name": "dict_key"
                 },
                 {
-                  "type": "STRING",
-                  "value": ":"
+                  "type": "SYMBOL",
+                  "name": "colon"
                 },
                 {
                   "type": "SYMBOL",
@@ -2565,8 +2573,8 @@
                     "name": "dict_key"
                   },
                   {
-                    "type": "STRING",
-                    "value": ":"
+                    "type": "SYMBOL",
+                    "name": "colon"
                   },
                   {
                     "type": "SYMBOL",
@@ -2610,8 +2618,8 @@
                     "name": "dict_key"
                   },
                   {
-                    "type": "STRING",
-                    "value": ":"
+                    "type": "SYMBOL",
+                    "name": "colon"
                   },
                   {
                     "type": "SYMBOL",
@@ -2739,16 +2747,16 @@
             "name": "expression"
           },
           {
-            "type": "STRING",
-            "value": "?"
+            "type": "SYMBOL",
+            "name": "ternary_then"
           },
           {
             "type": "SYMBOL",
             "name": "expression"
           },
           {
-            "type": "STRING",
-            "value": ":"
+            "type": "SYMBOL",
+            "name": "ternary_else"
           },
           {
             "type": "SYMBOL",
@@ -2756,6 +2764,18 @@
           }
         ]
       }
+    },
+    "condition_colon": {
+      "type": "STRING",
+      "value": ":"
+    },
+    "ternary_then": {
+      "type": "STRING",
+      "value": "?"
+    },
+    "ternary_else": {
+      "type": "SYMBOL",
+      "name": "condition_colon"
     },
     "constant": {
       "type": "CHOICE",

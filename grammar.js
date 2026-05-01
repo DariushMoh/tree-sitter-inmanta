@@ -61,6 +61,7 @@ module.exports = grammar({
     division_op: ($) => "/",
     mod_op: ($) => "%",
     regex: ($) => /matching\s+\/([^\/\\\n]|\\.)+\//,
+    colon: ($) => ":",
 
     // ── Keyword terminals ──────────────────────────────────────────────────
     // Note: dict_kw removed — dict is now part of attr_type_builtin
@@ -131,29 +132,29 @@ module.exports = grammar({
     assign: ($) =>
       choice(seq($.var_ref, "=", $.operand), seq($.var_ref, $.peq, $.operand)),
 
-    for_stmt: ($) => seq($.for_kw, $.id, $.in_kw, $.operand, ":", $.block),
+    for_stmt: ($) => seq($.for_kw, $.id, $.in_kw, $.operand, $.colon, $.block),
 
     if_stmt: ($) => seq($.if_kw, $.if_body, $.end_kw),
 
     if_body: ($) =>
-      seq($.expression, ":", optional($.stmt_list), optional($.if_next)),
+      seq($.expression, $.colon, optional($.stmt_list), optional($.if_next)),
 
     if_next: ($) =>
       choice(
-        seq($.else_kw, ":", optional($.stmt_list)),
+        seq($.else_kw, $.colon, optional($.stmt_list)),
         seq($.elif_kw, $.if_body),
       ),
 
     entity_def: ($) =>
       choice(
-        seq($.entity_kw, $.cid, ":", $.entity_body_outer),
-        seq($.entity_kw, $.id, ":", $.entity_body_outer),
+        seq($.entity_kw, $.cid, $.colon, $.entity_body_outer),
+        seq($.entity_kw, $.id, $.colon, $.entity_body_outer),
         seq(
           $.entity_kw,
           $.cid,
           $.extends_kw,
           $.class_ref_list,
-          ":",
+          $.colon,
           $.entity_body_outer,
         ),
         seq(
@@ -161,7 +162,7 @@ module.exports = grammar({
           $.id,
           $.extends_kw,
           $.class_ref_list,
-          ":",
+          $.colon,
           $.entity_body_outer,
         ),
       ),
@@ -245,7 +246,7 @@ module.exports = grammar({
       ),
 
     implementation_body: ($) => seq($.implementation_head, $.block),
-    implementation_head: ($) => choice(":", seq(":", $.mls)),
+    implementation_head: ($) => choice($.colon, seq($.colon, $.mls)),
     block: ($) => seq(optional($.stmt_list), $.end_kw),
 
     relation: ($) => choice(seq($.relation_def, $.mls), $.relation_def),
@@ -288,11 +289,12 @@ module.exports = grammar({
     multi: ($) =>
       choice(
         seq($.arity_open, $.integer, $.arity_close),
-        seq($.arity_open, $.integer, ":", $.arity_close),
-        seq($.arity_open, $.integer, ":", $.integer, $.arity_close),
-        seq($.arity_open, ":", $.integer, $.arity_close),
+        seq($.arity_open, $.integer, $.arity_colon, $.arity_close),
+        seq($.arity_open, $.integer, $.arity_colon, $.integer, $.arity_close),
+        seq($.arity_open, $.arity_colon, $.integer, $.arity_close),
       ),
 
+    arity_colon: ($) => ":",
     arity_open: ($) => "[",
     arity_close: ($) => "]",
 
@@ -432,17 +434,17 @@ module.exports = grammar({
     pair_list: ($) =>
       prec.left(
         seq(
-          repeat(seq($.dict_key, ":", $.operand, ",")),
+          repeat(seq($.dict_key, $.colon, $.operand, ",")),
           choice(
             seq(
               $.dict_key,
-              ":",
+              $.colon,
               $.operand,
               optional($.empty),
               optional($.pair_list_empty),
             ),
             $.pair_list_empty,
-            seq($.dict_key, ":", $.operand, ","),
+            seq($.dict_key, $.colon, $.operand, ","),
           ),
         ),
       ),
@@ -459,7 +461,19 @@ module.exports = grammar({
       ),
 
     conditional_expression: ($) =>
-      prec.left(seq($.expression, "?", $.expression, ":", $.expression)),
+      prec.left(
+        seq(
+          $.expression,
+          $.ternary_then,
+          $.expression,
+          $.ternary_else,
+          $.expression,
+        ),
+      ),
+
+    condition_colon: ($) => ":",
+    ternary_then: ($) => "?",
+    ternary_else: ($) => $.condition_colon,
 
     constant: ($) =>
       choice(
