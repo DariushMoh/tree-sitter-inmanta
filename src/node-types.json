@@ -957,6 +957,10 @@
           "named": true
         },
         {
+          "type": "cid",
+          "named": true
+        },
+        {
           "type": "id",
           "named": true
         },
@@ -966,6 +970,10 @@
         },
         {
           "type": "ns_ref",
+          "named": true
+        },
+        {
+          "type": "sep",
           "named": true
         }
       ]
