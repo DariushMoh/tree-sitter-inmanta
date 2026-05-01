@@ -389,15 +389,17 @@ module.exports = grammar({
     call_open: ($) => "(",
     call_close: ($) => ")",
 
-    list_def: ($) => seq("[", optional($.operand_list), "]"),
+    list_def: ($) => seq($.list_open, optional($.operand_list), $.list_close),
+    list_open: ($) => "[",
+    list_close: ($) => "]",
 
     list_comprehension: ($) =>
       seq(
-        "[",
+        $.list_open,
         $.expression,
         $.list_comprehension_for,
         optional($.list_comprehension_guard),
-        "]",
+        $.list_close,
       ),
 
     list_comprehension_for_empty: ($) => $.empty,
@@ -466,7 +468,7 @@ module.exports = grammar({
         $.mls,
       ),
 
-    constant_list: ($) => seq("[", optional($.constants), "]"),
+    constant_list: ($) => seq($.list_open, optional($.constants), $.list_close),
 
     constants: ($) =>
       prec.left(

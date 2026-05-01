@@ -423,11 +423,19 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
-      "required": false,
+      "multiple": true,
+      "required": true,
       "types": [
         {
           "type": "constants",
+          "named": true
+        },
+        {
+          "type": "list_close",
+          "named": true
+        },
+        {
+          "type": "list_open",
           "named": true
         }
       ]
@@ -1070,6 +1078,11 @@
     }
   },
   {
+    "type": "list_close",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "list_comprehension",
     "named": true,
     "fields": {},
@@ -1082,11 +1095,19 @@
           "named": true
         },
         {
+          "type": "list_close",
+          "named": true
+        },
+        {
           "type": "list_comprehension_for",
           "named": true
         },
         {
           "type": "list_comprehension_guard",
+          "named": true
+        },
+        {
+          "type": "list_open",
           "named": true
         }
       ]
@@ -1166,15 +1187,28 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
-      "required": false,
+      "multiple": true,
+      "required": true,
       "types": [
+        {
+          "type": "list_close",
+          "named": true
+        },
+        {
+          "type": "list_open",
+          "named": true
+        },
         {
           "type": "operand_list",
           "named": true
         }
       ]
     }
+  },
+  {
+    "type": "list_open",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "lookup_close",
