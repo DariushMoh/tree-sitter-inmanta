@@ -699,7 +699,11 @@
           "named": true
         },
         {
-          "type": "ns_ref",
+          "type": "id",
+          "named": true
+        },
+        {
+          "type": "sep",
           "named": true
         }
       ]

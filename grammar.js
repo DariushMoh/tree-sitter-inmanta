@@ -33,6 +33,8 @@ module.exports = grammar({
     [$.relation_def, $.index_lookup],
     [$.relation_def, $.constructor],
     [$.lookup_open, $.index_lookup],
+    [$.function_call, $.var_ref],
+    [$.function_call, $.id],
   ],
 
   rules: {
@@ -371,18 +373,23 @@ module.exports = grammar({
       seq($.class_ref, $.call_open, optional($.param_list), $.call_close),
 
     function_call: ($) =>
-      choice(
-        seq(
-          $.ns_ref,
-          $.call_open,
-          optional($.function_param_list),
-          $.call_close,
-        ),
-        seq(
-          $.attr_ref,
-          $.call_open,
-          optional($.function_param_list),
-          $.call_close,
+      prec(
+        1,
+        choice(
+          seq($.id, $.call_open, optional($.function_param_list), $.call_close),
+          seq(
+            $.id,
+            repeat(seq($.sep, $.id)),
+            $.call_open,
+            optional($.function_param_list),
+            $.call_close,
+          ),
+          seq(
+            $.attr_ref,
+            $.call_open,
+            optional($.function_param_list),
+            $.call_close,
+          ),
         ),
       ),
 
