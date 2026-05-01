@@ -92,6 +92,7 @@ module.exports = grammar({
     undef_kw: ($) => "undef",
     using_kw: ($) => "using",
     when_kw: ($) => "when",
+    self_kw: ($) => "self",
 
     // ── Structural rules ───────────────────────────────────────────────────
     head: ($) => $.mls,
@@ -549,9 +550,10 @@ module.exports = grammar({
         ),
       ),
 
-    var_ref: ($) => prec.left(choice($.attr_ref, $.ns_ref)),
+    var_ref: ($) => prec.left(choice($.attr_ref, $.ns_ref, $.self_kw)),
 
-    attr_ref: ($) => prec.left(seq($.var_ref, ".", $.id)),
+    attr_ref: ($) =>
+      prec.left(choice(seq($.var_ref, ".", $.id), seq($.self_kw, ".", $.id))),
 
     class_ref: ($) =>
       prec.left(

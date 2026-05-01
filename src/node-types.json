@@ -139,6 +139,10 @@
           "named": true
         },
         {
+          "type": "self_kw",
+          "named": true
+        },
+        {
           "type": "var_ref",
           "named": true
         }
@@ -1758,6 +1762,10 @@
         {
           "type": "ns_ref",
           "named": true
+        },
+        {
+          "type": "self_kw",
+          "named": true
         }
       ]
     }
@@ -2036,6 +2044,10 @@
   },
   {
     "type": "rstring",
+    "named": true
+  },
+  {
+    "type": "self_kw",
     "named": true
   },
   {

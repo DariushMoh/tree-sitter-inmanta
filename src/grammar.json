@@ -259,6 +259,10 @@
       "type": "STRING",
       "value": "when"
     },
+    "self_kw": {
+      "type": "STRING",
+      "value": "self"
+    },
     "head": {
       "type": "SYMBOL",
       "name": "mls"
@@ -3174,6 +3178,10 @@
           {
             "type": "SYMBOL",
             "name": "ns_ref"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "self_kw"
           }
         ]
       }
@@ -3182,19 +3190,41 @@
       "type": "PREC_LEFT",
       "value": 0,
       "content": {
-        "type": "SEQ",
+        "type": "CHOICE",
         "members": [
           {
-            "type": "SYMBOL",
-            "name": "var_ref"
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "var_ref"
+              },
+              {
+                "type": "STRING",
+                "value": "."
+              },
+              {
+                "type": "SYMBOL",
+                "name": "id"
+              }
+            ]
           },
           {
-            "type": "STRING",
-            "value": "."
-          },
-          {
-            "type": "SYMBOL",
-            "name": "id"
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "self_kw"
+              },
+              {
+                "type": "STRING",
+                "value": "."
+              },
+              {
+                "type": "SYMBOL",
+                "name": "id"
+              }
+            ]
           }
         ]
       }
