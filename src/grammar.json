@@ -3141,7 +3141,23 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "ns_ref"
+                "name": "id"
+              },
+              {
+                "type": "REPEAT",
+                "content": {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "sep"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "id"
+                    }
+                  ]
+                }
               },
               {
                 "type": "SYMBOL",

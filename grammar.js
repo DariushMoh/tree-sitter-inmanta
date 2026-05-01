@@ -533,7 +533,11 @@ module.exports = grammar({
 
     class_ref: ($) =>
       prec.left(
-        choice($.cid, seq($.ns_ref, $.sep, $.cid), seq($.var_ref, ".", $.cid)),
+        choice(
+          $.cid,
+          seq($.id, repeat(seq($.sep, $.id)), $.sep, $.cid),
+          seq($.var_ref, ".", $.cid),
+        ),
       ),
 
     class_ref_list: ($) =>
