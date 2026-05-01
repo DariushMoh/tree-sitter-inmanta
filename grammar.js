@@ -471,9 +471,8 @@ module.exports = grammar({
         ),
       ),
 
-    condition_colon: ($) => ":",
     ternary_then: ($) => "?",
-    ternary_else: ($) => $.condition_colon,
+    ternary_else: ($) => ":",
 
     constant: ($) =>
       choice(

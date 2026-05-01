@@ -363,11 +363,6 @@
     "fields": {}
   },
   {
-    "type": "condition_colon",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "conditional_expression",
     "named": true,
     "fields": {},
@@ -1628,17 +1623,7 @@
   {
     "type": "ternary_else",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "condition_colon",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "ternary_then",

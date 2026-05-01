@@ -2765,17 +2765,13 @@
         ]
       }
     },
-    "condition_colon": {
-      "type": "STRING",
-      "value": ":"
-    },
     "ternary_then": {
       "type": "STRING",
       "value": "?"
     },
     "ternary_else": {
-      "type": "SYMBOL",
-      "name": "condition_colon"
+      "type": "STRING",
+      "value": ":"
     },
     "constant": {
       "type": "CHOICE",
