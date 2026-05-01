@@ -110,6 +110,16 @@ module.exports = grammar({
       choice(
         seq($.import_kw, $.ns_ref),
         seq($.import_kw, $.ns_ref, $.as_kw, $.id),
+        seq($.import_kw, $.id, repeat(seq($.sep, $.id)), $.sep, $.cid),
+        seq(
+          $.import_kw,
+          $.id,
+          repeat(seq($.sep, $.id)),
+          $.sep,
+          $.cid,
+          $.as_kw,
+          $.id,
+        ),
       ),
 
     statement: ($) => choice($.assign, $.for_stmt, $.if_stmt, $.expression),
