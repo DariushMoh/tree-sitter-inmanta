@@ -1,0 +1,8 @@
+{
+  "name": "tree-sitter-inmanta",
+  "version": "0.1.0",
+  "description": "Tree-sitter grammar for the Inmanta configuration modelling language",
+  "dependencies": {
+    "tree-sitter-cli": "*"
+  }
+}
