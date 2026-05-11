@@ -303,8 +303,17 @@ module.exports = grammar({
 
     typedef_inner: ($) =>
       choice(
+        seq(
+          $.typedef_kw, $.id, $.as_kw, $.ns_ref, $.matching_kw,
+          $.regex,
+          repeat(seq($.and_kw, $.expression)),
+        ),
+        seq(
+          $.typedef_kw, $.id, $.as_kw, $.ns_ref, $.matching_kw,
+          $.expression, $.and_kw, $.regex,
+          repeat(seq($.and_kw, $.expression)),
+        ),
         seq($.typedef_kw, $.id, $.as_kw, $.ns_ref, $.matching_kw, $.expression),
-        seq($.typedef_kw, $.id, $.as_kw, $.ns_ref, $.matching_kw, $.regex),
         seq($.typedef_kw, $.cid, $.as_kw, $.constructor),
       ),
 

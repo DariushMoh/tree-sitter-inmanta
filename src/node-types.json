@@ -1690,6 +1690,10 @@
       "required": true,
       "types": [
         {
+          "type": "and_kw",
+          "named": true
+        },
+        {
           "type": "as_kw",
           "named": true
         },
